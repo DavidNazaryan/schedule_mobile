@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Мое Расписание",
+    "slug": "schedule-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#667eea"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.scheduleapp.myschedule",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSCalendarsUsageDescription": "Это приложение использует календарь для создания и управления событиями расписания.",
+        "NSRemindersUsageDescription": "Это приложение может создавать напоминания для ваших событий."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#667eea"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.scheduleapp.myschedule",
+      "versionCode": 1,
+      "permissions": [
+        "READ_CALENDAR",
+        "WRITE_CALENDAR",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#667eea",
+          "defaultChannel": "default"
+        }
+      ]
+    ]
+  }
+}
