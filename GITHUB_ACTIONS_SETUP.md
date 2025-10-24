@@ -10,9 +10,8 @@ This guide will help you set up GitHub Actions to build your iOS app automatical
 
 ## 🔧 Step 1: Create Expo Access Token
 
-1. **Login to Expo**:
+1. **Login to Expo** (if you haven't already):
    ```bash
-   cd schedule-app
    npx expo login
    ```
    Enter your Expo credentials when prompted.
@@ -21,7 +20,7 @@ This guide will help you set up GitHub Actions to build your iOS app automatical
    - Visit [https://expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens)
    - Click "Create Token"
    - Name it: `GitHub Actions Build`
-   - Copy the token (you'll need it in the next step)
+   - **Important**: Copy the token immediately (it won't be shown again!)
 
 ## 🔐 Step 2: Add GitHub Secrets
 
