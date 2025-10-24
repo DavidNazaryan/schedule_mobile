@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSU Schedule - React Native App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .status {
+            background: #f0f8ff;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .status.success {
+            background: #f0fff0;
+            border-color: #4CAF50;
+        }
+        .status.warning {
+            background: #fff8e1;
+            border-color: #ff9800;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .btn.secondary {
+            background: #2196F3;
+        }
+        .btn.secondary:hover {
+            background: #1976D2;
+        }
+        .instructions {
+            text-align: left;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .instructions ol {
+            margin: 10px 0;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+        .code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📱</div>
+        <h1>MSU Schedule</h1>
+        <p class="subtitle">React Native приложение для расписания МГУ</p>
+        
+        <div class="status success">
+            <h3>✅ Metro Bundler запущен!</h3>
+            <p>Сервер разработки работает на порту 8081</p>
+        </div>
+
+        <div class="instructions">
+            <h3>🚀 Как запустить приложение:</h3>
+            <ol>
+                <li><strong>Установите Java 17+</strong> (обязательно!)
+                    <br>Скачайте с <a href="https://adoptium.net/" target="_blank">adoptium.net</a>
+                </li>
+                <li><strong>Откройте Android Studio</strong></li>
+                <li><strong>File → Open</strong> → выберите папку <span class="code">android/</span></li>
+                <li><strong>Дождитесь синхронизации Gradle</strong></li>
+                <li><strong>Создайте эмулятор</strong> (Tools → AVD Manager)</li>
+                <li><strong>Запустите эмулятор</strong></li>
+                <li><strong>Run → Run 'app'</strong></li>
+            </ol>
+        </div>
+
+        <div class="instructions">
+            <h3>📱 Альтернативные способы:</h3>
+            <ol>
+                <li><strong>Физическое устройство:</strong> включите USB отладку и подключите телефон</li>
+                <li><strong>Командная строка:</strong> <span class="code">npm run android</span> (после установки Java 17)</li>
+                <li><strong>Expo Go:</strong> для быстрого тестирования (требует настройки)</li>
+            </ol>
+        </div>
+
+        <a href="http://localhost:8081" class="btn" target="_blank">
+            🌐 Открыть Metro Bundler
+        </a>
+        
+        <a href="file:///C:/Users/David/Desktop/schedule-spa/MSUSchedule/ANDROID_LAUNCH_GUIDE.md" class="btn secondary">
+            📖 Подробная инструкция
+        </a>
+
+        <div class="status warning">
+            <h3>⚠️ Важно:</h3>
+            <p>Для запуска Android приложения нужна <strong>Java 17 или выше</strong>. 
+            Текущая версия Java 8 не поддерживается Gradle 9.0.</p>
+        </div>
+    </div>
+
+    <script>
+        // Проверка доступности Metro bundler
+        fetch('http://localhost:8081/status')
+            .then(response => {
+                if (response.ok) {
+                    console.log('Metro bundler доступен');
+                }
+            })
+            .catch(error => {
+                console.log('Metro bundler недоступен:', error);
+            });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Админ-панель — вход</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            width: min(360px, 90vw);
+            box-shadow: 0 20px 60px -30px rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        h1 {
+            margin: 0 0 1.2rem;
+            font-size: 1.6rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        p.subtitle {
+            margin: 0 0 1.8rem;
+            font-size: 0.95rem;
+            text-align: center;
+            opacity: 0.85;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.35rem;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.75rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(15, 23, 42, 0.45);
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.2s ease, background 0.2s ease;
+        }
+
+        .input:focus {
+            border-color: rgba(37, 99, 235, 0.75);
+            background: rgba(15, 23, 42, 0.65);
+        }
+
+        .login-btn {
+            margin-top: 1.6rem;
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 35px -20px rgba(37, 99, 235, 0.8);
+        }
+
+        .error {
+            margin-bottom: 1rem;
+            padding: 0.75rem 0.9rem;
+            border-radius: 10px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(248, 113, 113, 0.35);
+            color: #fee2e2;
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 1.6rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            margin: 1.8rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .telegram-tip {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1>Вход в админ-панель</h1>
+        <p class="subtitle">Используйте корпоративный логин/пароль или откройте панель из Telegram</p>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="/admin/login">
+            <label for="username">Логин</label>
+            <input class="input" type="text" id="username" name="username" value="{{ username or '' }}" required>
+
+            <label for="password" style="margin-top: 1rem;">Пароль</label>
+            <input class="input" type="password" id="password" name="password" required>
+
+            <button class="login-btn" type="submit">Войти</button>
+        </form>
+
+        <div class="divider">или</div>
+        <p class="telegram-tip">Откройте админку прямо из Telegram WebApp, чтобы использовать авторизацию по аккаунту</p>
+
+        <a class="back-link" href="/">← Вернуться на главную</a>
+    </div>
+</body>
+</html>
+

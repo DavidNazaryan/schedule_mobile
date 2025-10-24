@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>Админ-панель — Расписание МГУ</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --accent: #1d4ed8;
+            --accent-dark: #1e3a8a;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #d8dee9;
+            --text: #0f172a;
+            --muted: #64748b;
+            --muted-bg: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --safe-area-bottom: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+            --safe-area-top: var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px));
+        }
+        
+        :root[data-theme="dark"] {
+            --accent: #1e293b;
+            --accent-dark: #0b1220;
+            --bg: #030712;
+            --card: #0f172a;
+            --border: #1f2a3d;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --muted-bg: #17233a;
+            --success: #059669;
+            --warning: #d97706;
+            --error: #dc2626;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-top: var(--safe-area-top);
+            padding-bottom: var(--safe-area-bottom);
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        
+        .admin-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .admin-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        
+        .admin-tab {
+            flex: 1;
+            padding: 12px 16px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted);
+            border: none;
+            background: none;
+        }
+        
+        .admin-tab.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 8px rgba(29, 78, 216, 0.3);
+        }
+        
+        .admin-tab:hover:not(.active) {
+            background: var(--muted-bg);
+            color: var(--text);
+        }
+        
+        .admin-content {
+            display: none;
+        }
+        
+        .admin-content.active {
+            display: block;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        
+        .stat-card p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        
+        .data-table {
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 16px 20px;
+            background: var(--muted-bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .table-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .table-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .table-row:hover {
+            background: var(--muted-bg);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .role-student {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .role-monitor {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .role-admin {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-dark);
+        }
+        
+        .btn-secondary {
+            background: var(--muted-bg);
+            color: var(--text);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+        
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--card);
+            color: var(--text);
+            font-size: 14px;
+        }
+        
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .modal-actions button {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 16px;
+            background: var(--muted-bg);
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination .current {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 12px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .table-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .admin-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .admin-tab {
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Заголовок -->
+        <div class="admin-header">
+            <h1>🛠️ Админ-панель</h1>
+            <p>Управление пользователями и системой расписания МГУ</p>
+        </div>
+        
+        <!-- Вкладки -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="dashboard">📊 Дашборд</button>
+            <button class="admin-tab" data-tab="users">👥 Пользователи</button>
+            <button class="admin-tab" data-tab="elder-groups">👑 Группы старост</button>
+            <button class="admin-tab" data-tab="groups">🏫 Группы</button>
+            <button class="admin-tab" data-tab="audit">📝 Аудит</button>
+            <button class="admin-tab" data-tab="settings">⚙️ Настройки</button>
+        </div>
+        
+        <!-- Дашборд -->
+        <div id="dashboard" class="admin-content active">
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card">
+                    <h3 id="total-users">-</h3>
+                    <p>Всего пользователей</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="total-groups">-</h3>
+                    <p>Всего групп</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="active-users">-</h3>
+                    <p>Активных за неделю</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="students-count">-</h3>
+                    <p>Студентов</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="monitors-count">-</h3>
+                    <p>Старост</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="admins-count">-</h3>
+                    <p>Администраторов</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Пользователи -->
+        <div id="users" class="admin-content">
+            <div class="data-table">
+                <div class="table-header">
+                    Управление пользователями
+                </div>
+                <div class="table-content" id="users-table">
+                    <div class="loading">Загрузка пользователей...</div>
+                </div>
+                <div class="pagination" id="users-pagination"></div>
+            </div>
+        </div>
+        
+        <!-- Группы старост -->
+        <div id="elder-groups" class="admin-content">
+            <div class="data-table">
+                <div class="table-header">
+                    Управление группами старост
+                    <button class="action-btn btn-primary" onclick="openCreateElderGroupModal()" style="float: right;">
+                        ➕ Создать группу
+                    </button>
+                </div>
+                <div class="table-content" id="elder-groups-table">
+                    <div class="loading">Загрузка групп старост...</div>
+                </div>
+                <div class="pagination" id="elder-groups-pagination"></div>
+            </div>
+        </div>
+        
+        <!-- Группы -->
+        <div id="groups" class="admin-content">
+            <div class="data-table">
+                <div class="table-header">
+                    Управление группами
+                </div>
+                <div class="table-content" id="groups-table">
+                    <div class="loading">Загрузка групп...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Аудит -->
+        <div id="audit" class="admin-content">
+            <div class="data-table">
+                <div class="table-header">
+                    Журнал аудита
+                </div>
+                <div class="table-content" id="audit-table">
+                    <div class="loading">Загрузка записей аудита...</div>
+                </div>
+                <div class="pagination" id="audit-pagination"></div>
+            </div>
+        </div>
+        
+        <!-- Настройки -->
+        <div id="settings" class="admin-content">
+            <div class="data-table">
+                <div class="table-header">
+                    Настройки системы
+                </div>
+                <div class="table-content" id="settings-content">
+                    <div class="loading">Загрузка настроек...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для создания группы старост -->
+    <div id="create-elder-group-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Создать группу старост</div>
+            <div class="form-group">
+                <label>ID группы</label>
+                <input type="text" id="create-group-id" placeholder="Введите ID группы">
+            </div>
+            <div class="form-group">
+                <label>Название группы</label>
+                <input type="text" id="create-group-name" placeholder="Введите название группы">
+            </div>
+            <div class="form-group">
+                <label>Telegram ID старосты</label>
+                <input type="number" id="create-monitor-id" placeholder="Введите Telegram ID старосты">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeCreateElderGroupModal()">Отмена</button>
+                <button class="btn-primary" onclick="createElderGroup()">Создать</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для управления участниками группы старост -->
+    <div id="elder-group-members-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Участники группы старост</div>
+            <div class="form-group">
+                <label>Группа</label>
+                <input type="text" id="members-group-name" readonly>
+            </div>
+            <div class="form-group">
+                <label>Добавить участника (Telegram ID)</label>
+                <input type="number" id="add-member-id" placeholder="Введите Telegram ID">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeElderGroupMembersModal()">Закрыть</button>
+                <button class="btn-primary" onclick="addMemberToElderGroup()">Добавить</button>
+            </div>
+            <div id="members-list" style="margin-top: 20px;">
+                <!-- Список участников будет загружен здесь -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для изменения роли -->
+    <div id="role-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Изменить роль пользователя</div>
+            <div class="form-group">
+                <label>Пользователь</label>
+                <input type="text" id="role-user-name" readonly>
+            </div>
+            <div class="form-group">
+                <label>Новая роль</label>
+                <select id="role-select">
+                    <option value="student">Студент</option>
+                    <option value="monitor">Староста</option>
+                    <option value="admin">Администратор</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Группа (опционально)</label>
+                <select id="role-group">
+                    <option value="">Не выбрана</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeRoleModal()">Отмена</button>
+                <button class="btn-primary" onclick="updateUserRole()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для присоединения к группе -->
+    <div id="group-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Присоединиться к группе</div>
+            <div class="form-group">
+                <label>ID группы</label>
+                <input type="text" id="group-id-input" placeholder="Введите ID группы">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeGroupModal()">Отмена</button>
+                <button class="btn-primary" onclick="joinGroup()">Присоединиться</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Глобальные переменные
+        let currentUser = null;
+        let currentPage = 1;
+        let currentTab = 'dashboard';
+        let currentElderGroupId = null;
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAdminPanel();
+        });
+        
+        // Инициализация админ-панели
+        async function initializeAdminPanel() {
+            try {
+                // Получаем информацию о текущем пользователе
+                const response = await fetch('/api/auth/me');
+                if (!response.ok) {
+                    throw new Error('Не удалось получить информацию о пользователе');
+                }
+                
+                currentUser = await response.json();
+                
+                // Проверяем права администратора
+                if (currentUser.role !== 'admin') {
+                    showError('У вас нет прав для доступа к админ-панели');
+                    return;
+                }
+                
+                // Загружаем данные дашборда
+                await loadDashboard();
+                
+                // Настраиваем обработчики событий
+                setupEventListeners();
+                
+            } catch (error) {
+                console.error('Ошибка инициализации:', error);
+                showError('Ошибка инициализации админ-панели: ' + error.message);
+            }
+        }
+        
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Переключение вкладок
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    switchTab(tabId);
+                });
+            });
+        }
+        
+        // Переключение вкладок
+        function switchTab(tabId) {
+            // Обновляем активную вкладку
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Обновляем активный контент
+            document.querySelectorAll('.admin-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            
+            currentTab = tabId;
+            
+            // Загружаем данные для вкладки
+            switch (tabId) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'elder-groups':
+                    loadElderGroups();
+                    break;
+                case 'groups':
+                    loadGroups();
+                    break;
+                case 'audit':
+                    loadAudit();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+        
+        // Загрузка дашборда
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить статистику');
+                }
+                
+                const stats = await response.json();
+                
+                // Обновляем статистику
+                document.getElementById('total-users').textContent = stats.total_users;
+                document.getElementById('total-groups').textContent = stats.total_groups;
+                document.getElementById('active-users').textContent = stats.active_users_week;
+                document.getElementById('students-count').textContent = stats.roles.student || 0;
+                document.getElementById('monitors-count').textContent = stats.roles.monitor || 0;
+                document.getElementById('admins-count').textContent = stats.roles.admin || 0;
+                
+            } catch (error) {
+                console.error('Ошибка загрузки дашборда:', error);
+                showError('Ошибка загрузки статистики: ' + error.message);
+            }
+        }
+        
+        // Загрузка пользователей
+        async function loadUsers(page = 1) {
+            try {
+                const response = await fetch(`/api/users?page=${page}&per_page=20`);
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить пользователей');
+                }
+                
+                const data = await response.json();
+                renderUsersTable(data.users);
+                renderPagination('users-pagination', data.page, data.total_pages, loadUsers);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки пользователей:', error);
+                document.getElementById('users-table').innerHTML = '<div class="error">Ошибка загрузки пользователей: ' + error.message + '</div>';
+            }
+        }
+        
+        // Отображение таблицы пользователей
+        function renderUsersTable(users) {
+            const table = document.getElementById('users-table');
+            
+            if (users.length === 0) {
+                table.innerHTML = '<div class="loading">Пользователи не найдены</div>';
+                return;
+            }
+            
+            const html = users.map(user => `
+                <div class="table-row">
+                    <div class="user-avatar">${user.first_name.charAt(0)}</div>
+                    <div>
+                        <div style="font-weight: 500;">${user.first_name} ${user.last_name || ''}</div>
+                        <div style="font-size: 12px; color: var(--muted);">@${user.username || 'без username'}</div>
+                    </div>
+                    <div>
+                        <span class="role-badge role-${user.role}">${user.role_display}</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted);">
+                        ${user.group_name || 'Без группы'}
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted);">
+                        ${user.last_seen ? new Date(user.last_seen).toLocaleDateString() : 'Никогда'}
+                    </div>
+                    <div>
+                        <button class="action-btn btn-primary" onclick="openRoleModal(${user.id}, '${user.first_name} ${user.last_name || ''}', '${user.role}', '${user.group_id || ''}')">
+                            Изменить роль
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            table.innerHTML = html;
+        }
+        
+        // Загрузка групп старост
+        async function loadElderGroups(page = 1) {
+            try {
+                const response = await fetch(`/api/elder-groups?page=${page}&per_page=20`);
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить группы старост');
+                }
+                
+                const data = await response.json();
+                renderElderGroupsTable(data.groups);
+                renderPagination('elder-groups-pagination', page, Math.ceil(data.total / 20), loadElderGroups);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки групп старост:', error);
+                document.getElementById('elder-groups-table').innerHTML = '<div class="error">Ошибка загрузки групп старост: ' + error.message + '</div>';
+            }
+        }
+        
+        // Отображение таблицы групп старост
+        function renderElderGroupsTable(groups) {
+            const table = document.getElementById('elder-groups-table');
+            
+            if (groups.length === 0) {
+                table.innerHTML = '<div class="loading">Группы старост не найдены</div>';
+                return;
+            }
+            
+            const html = groups.map(group => `
+                <div class="table-row">
+                    <div style="font-weight: 500;">${group.group_name}</div>
+                    <div style="font-size: 12px; color: var(--muted);">${group.group_id}</div>
+                    <div style="font-size: 12px; color: var(--muted);">
+                        ${group.monitor ? `${group.monitor.first_name} ${group.monitor.last_name || ''}` : 'Без старосты'}
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted);">
+                        ${group.member_count} участников
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted);">
+                        ${group.created_at ? new Date(group.created_at).toLocaleDateString() : 'Неизвестно'}
+                    </div>
+                    <div>
+                        <button class="action-btn btn-primary" onclick="openElderGroupMembersModal('${group.group_id}', '${group.group_name}')">
+                            Участники
+                        </button>
+                        <button class="action-btn btn-danger" onclick="deleteElderGroup('${group.group_id}', '${group.group_name}')">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            table.innerHTML = html;
+        }
+        
+        // Загрузка групп
+        async function loadGroups() {
+            try {
+                const response = await fetch('/api/groups');
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить группы');
+                }
+                
+                const data = await response.json();
+                renderGroupsTable(data.groups);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки групп:', error);
+                document.getElementById('groups-table').innerHTML = '<div class="error">Ошибка загрузки групп: ' + error.message + '</div>';
+            }
+        }
+        
+        // Отображение таблицы групп
+        function renderGroupsTable(groups) {
+            const table = document.getElementById('groups-table');
+            
+            if (groups.length === 0) {
+                table.innerHTML = '<div class="loading">Группы не найдены</div>';
+                return;
+            }
+            
+            const html = groups.map(group => `
+                <div class="table-row">
+                    <div style="font-weight: 500;">${group.name}</div>
+                    <div style="font-size: 12px; color: var(--muted);">${group.id}</div>
+                    <div style="font-size: 12px; color: var(--muted);">
+                        ${group.monitor_name || 'Без старосты'}
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted);">
+                        ${group.student_count} студентов
+                    </div>
+                    <div>
+                        <button class="action-btn btn-secondary" onclick="openGroupModal('${group.id}')">
+                            Присоединиться
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            table.innerHTML = html;
+        }
+        
+        // Загрузка аудита
+        async function loadAudit(page = 1) {
+            try {
+                const response = await fetch(`/api/admin/audit?page=${page}&per_page=20`);
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить записи аудита');
+                }
+                
+                const data = await response.json();
+                renderAuditTable(data.logs);
+                renderPagination('audit-pagination', data.page, data.total_pages, loadAudit);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки аудита:', error);
+                document.getElementById('audit-table').innerHTML = '<div class="error">Ошибка загрузки аудита: ' + error.message + '</div>';
+            }
+        }
+        
+        // Отображение таблицы аудита
+        function renderAuditTable(logs) {
+            const table = document.getElementById('audit-table');
+            
+            if (logs.length === 0) {
+                table.innerHTML = '<div class="loading">Записи аудита не найдены</div>';
+                return;
+            }
+            
+            const html = logs.map(log => `
+                <div class="table-row">
+                    <div style="font-weight: 500;">${log.user_name}</div>
+                    <div>
+                        <span class="role-badge role-student">${log.action}</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted);">
+                        ${log.resource || 'Система'}
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted);">
+                        ${log.details || '-'}
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted);">
+                        ${new Date(log.created_at).toLocaleString()}
+                    </div>
+                </div>
+            `).join('');
+            
+            table.innerHTML = html;
+        }
+        
+        // Загрузка настроек
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/system/info');
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить настройки');
+                }
+                
+                const settings = await response.json();
+                renderSettings(settings);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки настроек:', error);
+                document.getElementById('settings-content').innerHTML = '<div class="error">Ошибка загрузки настроек: ' + error.message + '</div>';
+            }
+        }
+        
+        // Отображение настроек
+        function renderSettings(settings) {
+            const content = document.getElementById('settings-content');
+            
+            const html = `
+                <div class="table-row">
+                    <div style="font-weight: 500;">Версия системы</div>
+                    <div>${settings.version}</div>
+                </div>
+                <div class="table-row">
+                    <div style="font-weight: 500;">Статус базы данных</div>
+                    <div>${settings.database_status}</div>
+                </div>
+                <div class="table-row">
+                    <div style="font-weight: 500;">Всего пользователей</div>
+                    <div>${settings.total_users}</div>
+                </div>
+                <div class="table-row">
+                    <div style="font-weight: 500;">Всего групп</div>
+                    <div>${settings.total_groups}</div>
+                </div>
+                <div class="table-row">
+                    <div style="font-weight: 500;">Время работы</div>
+                    <div>${settings.uptime}</div>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+        }
+        
+        // Отображение пагинации
+        function renderPagination(containerId, currentPage, totalPages, loadFunction) {
+            const container = document.getElementById(containerId);
+            
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            // Кнопка "Назад"
+            html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="${loadFunction.name}(${currentPage - 1})">‹</button>`;
+            
+            // Номера страниц
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+                const activeClass = i === currentPage ? 'current' : '';
+                html += `<button class="${activeClass}" onclick="${loadFunction.name}(${i})">${i}</button>`;
+            }
+            
+            // Кнопка "Вперед"
+            html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="${loadFunction.name}(${currentPage + 1})">›</button>`;
+            
+            container.innerHTML = html;
+        }
+        
+        // Открытие модального окна изменения роли
+        async function openRoleModal(userId, userName, currentRole, currentGroup) {
+            document.getElementById('role-user-name').value = userName;
+            document.getElementById('role-select').value = currentRole;
+            document.getElementById('role-modal').classList.add('active');
+            
+            // Сохраняем ID пользователя в data-атрибуте
+            document.getElementById('role-modal').dataset.userId = userId;
+            
+            // Загружаем список групп
+            await loadGroupsForRoleModal(currentGroup);
+        }
+        
+        // Загрузка списка групп для модального окна
+        async function loadGroupsForRoleModal(selectedGroupId) {
+            try {
+                const response = await fetch('/api/groups');
+                if (!response.ok) throw new Error('Ошибка загрузки групп');
+                
+                const data = await response.json();
+                const select = document.getElementById('role-group');
+                
+                // Очищаем текущие опции, кроме первой
+                select.innerHTML = '<option value="">Не выбрана</option>';
+                
+                // Добавляем группы
+                data.groups.forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group.id;
+                    option.textContent = `${group.name} (${group.id})`;
+                    if (group.id === selectedGroupId) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки групп:', error);
+                showError('Не удалось загрузить список групп');
+            }
+        }
+        
+        // Закрытие модального окна изменения роли
+        function closeRoleModal() {
+            document.getElementById('role-modal').classList.remove('active');
+        }
+        
+        // Обновление роли пользователя
+        async function updateUserRole() {
+            const userId = document.getElementById('role-modal').dataset.userId;
+            const newRole = document.getElementById('role-select').value;
+            const groupId = document.getElementById('role-group').value;
+            
+            try {
+                const response = await fetch('/api/users/role', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: parseInt(userId),
+                        role: newRole,
+                        group_id: groupId || null
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Ошибка обновления роли');
+                }
+                
+                const result = await response.json();
+                showSuccess(result.message);
+                closeRoleModal();
+                
+                // Перезагружаем данные
+                if (currentTab === 'users') {
+                    loadUsers(currentPage);
+                }
+                loadDashboard();
+                
+            } catch (error) {
+                console.error('Ошибка обновления роли:', error);
+                showError('Ошибка обновления роли: ' + error.message);
+            }
+        }
+        
+        // Открытие модального окна присоединения к группе
+        function openGroupModal(groupId = '') {
+            document.getElementById('group-id-input').value = groupId;
+            document.getElementById('group-modal').classList.add('active');
+        }
+        
+        // Закрытие модального окна присоединения к группе
+        function closeGroupModal() {
+            document.getElementById('group-modal').classList.remove('active');
+        }
+        
+        // Присоединение к группе
+        async function joinGroup() {
+            const groupId = document.getElementById('group-id-input').value;
+            
+            if (!groupId) {
+                showError('Введите ID группы');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/groups/join', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        group_id: groupId
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Ошибка присоединения к группе');
+                }
+                
+                const result = await response.json();
+                showSuccess(result.message);
+                closeGroupModal();
+                
+                // Перезагружаем данные
+                if (currentTab === 'groups') {
+                    loadGroups();
+                }
+                loadDashboard();
+                
+            } catch (error) {
+                console.error('Ошибка присоединения к группе:', error);
+                showError('Ошибка присоединения к группе: ' + error.message);
+            }
+        }
+        
+        // Функции для управления группами старост
+        
+        // Открытие модального окна создания группы старост
+        function openCreateElderGroupModal() {
+            document.getElementById('create-elder-group-modal').classList.add('active');
+        }
+        
+        // Закрытие модального окна создания группы старост
+        function closeCreateElderGroupModal() {
+            document.getElementById('create-elder-group-modal').classList.remove('active');
+            // Очищаем поля
+            document.getElementById('create-group-id').value = '';
+            document.getElementById('create-group-name').value = '';
+            document.getElementById('create-monitor-id').value = '';
+        }
+        
+        // Создание группы старост
+        async function createElderGroup() {
+            const groupId = document.getElementById('create-group-id').value;
+            const groupName = document.getElementById('create-group-name').value;
+            const monitorId = document.getElementById('create-monitor-id').value;
+            
+            if (!groupId || !groupName || !monitorId) {
+                showError('Заполните все поля');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/elder-groups', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        group_id: groupId,
+                        group_name: groupName,
+                        monitor_telegram_id: parseInt(monitorId)
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Ошибка создания группы');
+                }
+                
+                const result = await response.json();
+                showSuccess('Группа старост успешно создана');
+                closeCreateElderGroupModal();
+                
+                // Перезагружаем данные
+                if (currentTab === 'elder-groups') {
+                    loadElderGroups(currentPage);
+                }
+                loadDashboard();
+                
+            } catch (error) {
+                console.error('Ошибка создания группы:', error);
+                showError('Ошибка создания группы: ' + error.message);
+            }
+        }
+        
+        // Открытие модального окна управления участниками
+        function openElderGroupMembersModal(groupId, groupName) {
+            currentElderGroupId = groupId;
+            document.getElementById('members-group-name').value = groupName;
+            document.getElementById('elder-group-members-modal').classList.add('active');
+            loadElderGroupMembers(groupId);
+        }
+        
+        // Закрытие модального окна управления участниками
+        function closeElderGroupMembersModal() {
+            document.getElementById('elder-group-members-modal').classList.remove('active');
+            currentElderGroupId = null;
+            document.getElementById('add-member-id').value = '';
+        }
+        
+        // Загрузка участников группы старост
+        async function loadElderGroupMembers(groupId) {
+            try {
+                const response = await fetch(`/api/elder-groups/${groupId}`);
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить участников группы');
+                }
+                
+                const group = await response.json();
+                renderElderGroupMembers(group.members);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки участников:', error);
+                document.getElementById('members-list').innerHTML = '<div class="error">Ошибка загрузки участников: ' + error.message + '</div>';
+            }
+        }
+        
+        // Отображение участников группы старост
+        function renderElderGroupMembers(members) {
+            const container = document.getElementById('members-list');
+            
+            if (members.length === 0) {
+                container.innerHTML = '<div class="loading">Участники не найдены</div>';
+                return;
+            }
+            
+            const html = members.map(member => `
+                <div class="table-row" style="margin-bottom: 8px;">
+                    <div class="user-avatar">${member.first_name.charAt(0)}</div>
+                    <div>
+                        <div style="font-weight: 500;">${member.first_name} ${member.last_name || ''}</div>
+                        <div style="font-size: 12px; color: var(--muted);">@${member.username || 'без username'}</div>
+                    </div>
+                    <div>
+                        <span class="role-badge role-${member.role}">${member.role_display}</span>
+                    </div>
+                    <div>
+                        <button class="action-btn btn-danger" onclick="removeMemberFromElderGroup(${member.id})">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+        
+        // Добавление участника в группу старост
+        async function addMemberToElderGroup() {
+            const memberId = document.getElementById('add-member-id').value;
+            
+            if (!memberId || !currentElderGroupId) {
+                showError('Введите Telegram ID участника');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/elder-groups/${currentElderGroupId}/members`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        group_id: currentElderGroupId,
+                        user_telegram_id: parseInt(memberId)
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Ошибка добавления участника');
+                }
+                
+                const result = await response.json();
+                showSuccess(result.message);
+                document.getElementById('add-member-id').value = '';
+                
+                // Перезагружаем участников
+                loadElderGroupMembers(currentElderGroupId);
+                
+                // Перезагружаем список групп
+                if (currentTab === 'elder-groups') {
+                    loadElderGroups(currentPage);
+                }
+                
+            } catch (error) {
+                console.error('Ошибка добавления участника:', error);
+                showError('Ошибка добавления участника: ' + error.message);
+            }
+        }
+        
+        // Удаление участника из группы старост
+        async function removeMemberFromElderGroup(userId) {
+            if (!currentElderGroupId) {
+                showError('Ошибка: не выбрана группа');
+                return;
+            }
+            
+            if (!confirm('Вы уверены, что хотите удалить этого участника из группы?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/elder-groups/${currentElderGroupId}/members/${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Ошибка удаления участника');
+                }
+                
+                const result = await response.json();
+                showSuccess(result.message);
+                
+                // Перезагружаем участников
+                loadElderGroupMembers(currentElderGroupId);
+                
+                // Перезагружаем список групп
+                if (currentTab === 'elder-groups') {
+                    loadElderGroups(currentPage);
+                }
+                
+            } catch (error) {
+                console.error('Ошибка удаления участника:', error);
+                showError('Ошибка удаления участника: ' + error.message);
+            }
+        }
+        
+        // Удаление группы старост
+        async function deleteElderGroup(groupId, groupName) {
+            if (!confirm(`Вы уверены, что хотите удалить группу "${groupName}"? Это действие нельзя отменить.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/elder-groups/${groupId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Ошибка удаления группы');
+                }
+                
+                const result = await response.json();
+                showSuccess(result.message);
+                
+                // Перезагружаем данные
+                if (currentTab === 'elder-groups') {
+                    loadElderGroups(currentPage);
+                }
+                loadDashboard();
+                
+            } catch (error) {
+                console.error('Ошибка удаления группы:', error);
+                showError('Ошибка удаления группы: ' + error.message);
+            }
+        }
+        
+        // Показать сообщение об ошибке
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            
+            const container = document.querySelector('.admin-container');
+            container.insertBefore(errorDiv, container.firstChild);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+        
+        // Показать сообщение об успехе
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            
+            const container = document.querySelector('.admin-container');
+            container.insertBefore(successDiv, container.firstChild);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

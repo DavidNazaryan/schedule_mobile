@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Тест изображений новостей - соотношение 1024:691</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .test-section {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #d8dee9;
+        }
+
+        .test-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1d4ed8;
+        }
+
+        /* Стили для карточек новостей */
+        .news-card {
+            background: white;
+            border: 1px solid #d8dee9;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .news-card-header {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .news-card-title {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* Изображение с соотношением 1024:691 */
+        .news-image-container {
+            position: relative;
+            width: 120px;
+            height: 81px; /* 120 * (691/1024) ≈ 81px */
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .news-image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        /* Полноширинное изображение для мобильных */
+        .news-image-full {
+            width: 100%;
+            height: 0;
+            padding-bottom: 67.48%; /* (691/1024) * 100% = 67.48% */
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #e2e8f0;
+            margin-bottom: 15px;
+        }
+
+        .news-image-full img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .aspect-info {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 10px;
+        }
+
+        .placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #e2e8f0 25%, transparent 25%), 
+                        linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #e2e8f0 75%), 
+                        linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            color: #64748b;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .news-card-header {
+                flex-direction: column;
+            }
+            
+            .news-image-container {
+                width: 100%;
+                height: 0;
+                padding-bottom: 67.48%;
+                order: -1;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Тест изображений новостей</h1>
+        <p style="text-align: center; color: #64748b;">Соотношение сторон: 1024:691 (≈ 1.48:1)</p>
+
+        <div class="test-section">
+            <div class="test-title">1. Карточка новости (десктоп) - 120×81px</div>
+            <div class="news-card">
+                <div class="news-card-header">
+                    <h3 class="news-card-title">II Международный симпозиум «Создавая будущее»</h3>
+                    <div class="news-image-container">
+                        <img src="https://stud.spa.msu.ru/wp-content/uploads/2025/09/kluby.png" 
+                             alt="Новость" 
+                             onerror="this.parentElement.innerHTML='<div class=&quot;placeholder&quot;>Изображение недоступно</div>'">
+                    </div>
+                </div>
+                <p>Приглашаем вас принять участие в Экспертной программе II Международного симпозиума...</p>
+            </div>
+            <div class="aspect-info">
+                📐 Размер: 120×81px | Соотношение: 1024:691 | Процент: 67.48%
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">2. Полноширинное изображение (мобильные)</div>
+            <div class="news-image-full">
+                <img src="https://stud.spa.msu.ru/wp-content/uploads/2025/09/kuratory-novye.png" 
+                     alt="Новость" 
+                     onerror="this.parentElement.innerHTML='<div class=&quot;placeholder&quot;>Изображение недоступно</div>'">
+            </div>
+            <div class="aspect-info">
+                📐 Ширина: 100% | Высота: 67.48% от ширины | Соотношение: 1024:691
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">3. Тестовые изображения разных размеров</div>
+            
+            <h4>Маленькое изображение (150×101px)</h4>
+            <div style="width: 150px; height: 101px; position: relative; border-radius: 12px; overflow: hidden; background: #e2e8f0;">
+                <img src="https://via.placeholder.com/1024x691/1d4ed8/ffffff?text=1024x691" 
+                     style="width: 100%; height: 100%; object-fit: cover;" alt="Тест">
+            </div>
+            
+            <h4 style="margin-top: 20px;">Среднее изображение (200×135px)</h4>
+            <div style="width: 200px; height: 135px; position: relative; border-radius: 12px; overflow: hidden; background: #e2e8f0;">
+                <img src="https://via.placeholder.com/1024x691/059669/ffffff?text=1024x691" 
+                     style="width: 100%; height: 100%; object-fit: cover;" alt="Тест">
+            </div>
+            
+            <h4 style="margin-top: 20px;">Большое изображение (300×203px)</h4>
+            <div style="width: 300px; height: 203px; position: relative; border-radius: 12px; overflow: hidden; background: #e2e8f0;">
+                <img src="https://via.placeholder.com/1024x691/dc2626/ffffff?text=1024x691" 
+                     style="width: 100%; height: 100%; object-fit: cover;" alt="Тест">
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">4. Расчёты соотношения</div>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background: #f1f5f9;">
+                    <th style="padding: 10px; text-align: left; border: 1px solid #d8dee9;">Ширина</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #d8dee9;">Высота (691/1024)</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #d8dee9;">Процент</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">120px</td>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">81px</td>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">67.48%</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">200px</td>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">135px</td>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">67.48%</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">300px</td>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">203px</td>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">67.48%</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">100% (мобильные)</td>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">67.48% от ширины</td>
+                    <td style="padding: 10px; border: 1px solid #d8dee9;">padding-bottom: 67.48%</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Проверяем поддержку aspect-ratio
+        const supportsAspectRatio = CSS.supports('aspect-ratio', '1024 / 691');
+        console.log('Поддержка aspect-ratio:', supportsAspectRatio);
+        
+        if (!supportsAspectRatio) {
+            console.warn('Браузер не поддерживает aspect-ratio, используем fallback');
+        }
+    </script>
+</body>
+</html>
+
+
+
