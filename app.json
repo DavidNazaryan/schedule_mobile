@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Мое Расписание",
+    "name": "Расписание МГУ",
     "slug": "schedule-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,8 +17,9 @@
       "bundleIdentifier": "com.scheduleapp.myschedule",
       "buildNumber": "1.0.0",
       "infoPlist": {
-        "NSCalendarsUsageDescription": "Это приложение использует календарь для создания и управления событиями расписания.",
-        "NSRemindersUsageDescription": "Это приложение может создавать напоминания для ваших событий."
+        "NSCalendarsUsageDescription": "Приложению нужен доступ к календарю, чтобы создавать напоминания о занятиях.",
+        "NSRemindersUsageDescription": "Приложению нужен доступ к напоминаниям, чтобы отправлять уведомления о расписании.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -48,7 +49,14 @@
           "color": "#667eea",
           "defaultChannel": "default"
         }
-      ]
-    ]
+      ],
+      "expo-font",
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ae7b7e27-f529-4478-b009-d6cfcbefe5f8"
+      }
+    }
   }
 }

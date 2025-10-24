@@ -1,0 +1,53 @@
+name: Build iOS App for AltStore
+
+on:
+  # Trigger on push to main branch
+  push:
+    branches: [ main, master ]
+  # Allow manual trigger from Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: schedule-app/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: schedule-app
+        run: npm ci
+      
+      - name: Setup Expo and EAS
+        run: npm install -g @expo/cli eas-cli
+      
+      - name: Expo Login
+        working-directory: schedule-app
+        run: npx expo login
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      
+      - name: Build iOS App
+        working-directory: schedule-app
+        run: npx eas build --profile preview --platform ios --non-interactive --no-wait
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      
+      - name: Get Build URL
+        working-directory: schedule-app
+        run: |
+          echo "Build started successfully!"
+          echo "Check your build status at: https://expo.dev/accounts/[your-account]/projects/schedule-app/builds"
+          npx eas build:list --platform ios --limit 1
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
